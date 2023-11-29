@@ -69,6 +69,7 @@ class Filter {
                 listFilteredDepths.add(nodeDepth);
             } else {
                 //Node NOT in hierarchy, skipping all children
+                //Assumption is that the provided hierarchy is DFS-ordered
                 int j = i + 1;
                 while (j < hierarchy.size() && nodeDepth < hierarchy.depth(j)) {
                     j++;
