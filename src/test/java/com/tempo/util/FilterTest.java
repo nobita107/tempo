@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FilterTest {
     @Test
-    @DisplayName("Always FALSE predicate, filtered must be empty")
+    @DisplayName("Always FALSE predicate, filtered must be empty.")
     public void testFilterAll() {
         Hierarchy unfiltered = new ArrayBasedHierarchy(
                 //         x  x     x  x     x  x     x   x
@@ -21,7 +21,7 @@ public class FilterTest {
     }
 
     @Test
-    @DisplayName("Always true predicate, filtered must match original")
+    @DisplayName("Always true predicate, filtered must match original.")
     public void testFilterNothing() {
         Hierarchy unfiltered = new ArrayBasedHierarchy(
                 //         x  x     x  x     x  x     x   x
@@ -34,6 +34,7 @@ public class FilterTest {
     }
 
     @Test
+    @DisplayName("Test filter, valid input, must match expected.")
     public void testFilter() {
         Hierarchy unfiltered = new ArrayBasedHierarchy(
                 //         x  x     x  x     x  x     x   x
@@ -50,10 +51,42 @@ public class FilterTest {
     }
 
     @Test
+    @DisplayName("Test filter, valid input with last node OUT, must match expected.")
+    public void testFilterWithLastNodeOut() {
+        Hierarchy unfiltered = new ArrayBasedHierarchy(
+                //        x  x
+                new int[]{1, 2, 3},
+                new int[]{0, 1, 2}
+        );
+        Hierarchy filteredActual = Filter.filter(unfiltered, nodeId -> nodeId % 3 != 0);
+        Hierarchy filteredExpected = new ArrayBasedHierarchy(
+                new int[]{1, 2},
+                new int[]{0, 1}
+        );
+
+        assertEquals(filteredExpected.formatString(), filteredActual.formatString());
+    }
+
+    @Test
+    @DisplayName("Test filter, valid input with ALL nodes out, must match expected.")
+    public void testFilterWithAllNodeOut() {
+        Hierarchy unfiltered = new ArrayBasedHierarchy(
+                new int[]{0, 2, 3},
+                new int[]{0, 1, 2}
+        );
+        Hierarchy filteredActual = Filter.filter(unfiltered, nodeId -> nodeId % 3 != 0);
+        Hierarchy filteredExpected = new ArrayBasedHierarchy(
+                new int[]{},
+                new int[]{}
+        );
+
+        assertEquals(filteredExpected.formatString(), filteredActual.formatString());
+    }
+
+    @Test
     @DisplayName("Empty input - Should return empty output")
     public void testFilterEmptyInput() {
         Hierarchy emptyHierarchy = new ArrayBasedHierarchy(
-                //         x  x     x  x     x  x     x   x
                 new int[]{},
                 new int[]{}
         );
