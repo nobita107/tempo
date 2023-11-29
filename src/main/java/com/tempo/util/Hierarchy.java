@@ -62,19 +62,18 @@ class Filter {
         for (int i = 0; i < hierarchy.size(); i++) {
             int nodeId = hierarchy.nodeId(i);
             int nodeDepth = hierarchy.depth(i);
+
             if (nodeIdPredicate.test(nodeId)) {
+                //This guy IN
                 listFilteredNodeIds.add(nodeId);
                 listFilteredDepths.add(nodeDepth);
             } else {
-
                 //Node NOT in hierarchy, skipping all children
                 int j = i + 1;
                 while (j < hierarchy.size() && nodeDepth < hierarchy.depth(j)) {
-                    System.out.println("Skipping node: " + hierarchy.nodeId(j));
                     j++;
                 }
                 i = j - 1;
-                System.out.println("Continue with node: " + hierarchy.nodeId(i));
             }
         }
 
@@ -89,6 +88,9 @@ class ArrayBasedHierarchy implements Hierarchy {
     private final int[] myDepths;
 
     public ArrayBasedHierarchy(int[] nodeIds, int[] depths) {
+        if(nodeIds.length != depths.length){
+            throw new IllegalArgumentException("IDs and depths arrays must be of same length.");
+        }
         myNodeIds = nodeIds;
         myDepths = depths;
     }
