@@ -1,12 +1,10 @@
 package com.tempo.util;
 
-import org.junit.jupiter.api.Test;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * <p>A <tt>Hierarchy</tt> stores an arbitrary <em>forest</em> (an ordered collection of ordered trees)
@@ -41,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * - - 11
  * </code>
  * Note that the depth is equal to the number of hyphens for each node.
- * */
+ */
 interface Hierarchy {
     int size();
 
@@ -50,17 +48,39 @@ interface Hierarchy {
     int depth(int index);
 
     default String formatString() {
-        return IntStream.range(0, size()).mapToObj(i -> "" + nodeId(i) + ":" + depth(i) ).collect(Collectors.joining(", ", "[", "]"));
+        return IntStream.range(0, size()).mapToObj(i -> "" + nodeId(i) + ":" + depth(i)).collect(Collectors.joining(", ", "[", "]"));
     }
 }
 
 class Filter {
     /**
      * A node is present in the filtered hierarchy iff its node ID passes the predicate and all of its ancestors pass it as well.
-     * */
+     */
     static Hierarchy filter(Hierarchy hierarchy, IntPredicate nodeIdPredicate) {
-        // todo implement
-        return new ArrayBasedHierarchy(new int[0], new int[0]);
+        List<Integer> listFilteredNodeIds = new ArrayList<>();
+        List<Integer> listFilteredDepths = new ArrayList<>();
+        for (int i = 0; i < hierarchy.size(); i++) {
+            int nodeId = hierarchy.nodeId(i);
+            int nodeDepth = hierarchy.depth(i);
+            if (nodeIdPredicate.test(nodeId)) {
+                listFilteredNodeIds.add(nodeId);
+                listFilteredDepths.add(nodeDepth);
+            } else {
+
+                //Node NOT in hierarchy, skipping all children
+                int j = i + 1;
+                while (j < hierarchy.size() && nodeDepth < hierarchy.depth(j)) {
+                    System.out.println("Skipping node: " + hierarchy.nodeId(j));
+                    j++;
+                }
+                i = j - 1;
+                System.out.println("Continue with node: " + hierarchy.nodeId(i));
+            }
+        }
+
+        int[] filteredNodeIds = listFilteredNodeIds.stream().mapToInt(Integer::intValue).toArray();
+        int[] filteredDepths = listFilteredDepths.stream().mapToInt(Integer::intValue).toArray();
+        return new ArrayBasedHierarchy(filteredNodeIds, filteredDepths);
     }
 }
 
